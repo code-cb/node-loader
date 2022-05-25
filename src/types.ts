@@ -5,7 +5,7 @@ export type HookFunction<TArgs extends [unknown, unknown], TReturn> = (
   ...args: [...args: TArgs, defaultImpl: HookFunction<TArgs, TReturn>]
 ) => TReturn;
 
-export type ModuleFormat = 'builtin' | 'commonjs' | 'json' | 'module' | 'wasm';
+export type ModuleFormat = LoadResult['format'];
 
 type ExtendedModuleFormat = ModuleFormat | Omit<string, ''>;
 
@@ -32,10 +32,23 @@ export interface LoadContext {
   importAssertions: ImportAssertions;
 }
 
-export interface LoadResult {
-  format: ModuleFormat;
-  source: string | ArrayBuffer | SharedArrayBuffer | Uint8Array;
-}
+export type LoadResult =
+  | {
+      format: 'builtin';
+    }
+  | { format: 'commonjs' }
+  | {
+      format: 'json';
+      source: string | ArrayBuffer | SharedArrayBuffer | Uint8Array;
+    }
+  | {
+      format: 'module';
+      source: string | ArrayBuffer | SharedArrayBuffer | Uint8Array;
+    }
+  | {
+      format: 'wasm';
+      source: ArrayBuffer | SharedArrayBuffer | Uint8Array;
+    };
 
 export type LoadHook = HookFunction<
   [url: string, context: LoadContext],
