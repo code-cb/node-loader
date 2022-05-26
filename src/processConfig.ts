@@ -1,11 +1,11 @@
-import {
+import type {
   HookMap,
   HookFunction,
   ResolvedLoaders,
   NodeLoaderConfigInput,
   NodeLoaderConfig,
-} from './types';
-import { die, configErrorMessage } from './utils';
+} from './types.js';
+import { die, configErrorMessage } from './utils.js';
 
 const getHooks = <THookName extends keyof HookMap>(
   loaders: HookMap[],

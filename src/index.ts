@@ -1,9 +1,14 @@
 import { isAbsolute, resolve as pathResolve } from 'node:path';
 import { pathToFileURL } from 'node:url';
-import { processConfig } from './processConfig';
-import { LoadHook, NodeLoader, NodeLoaderConfig, ResolveHook } from './types';
+import { processConfig } from './processConfig.js';
+import type {
+  LoadHook,
+  NodeLoader,
+  NodeLoaderConfig,
+  ResolveHook,
+} from './types.js';
 
-export * from './global';
+export type {} from './global.js';
 export type {
   LoadContext,
   LoadHook,
@@ -15,7 +20,7 @@ export type {
   ResolveContext,
   ResolveHook,
   ResolveResult,
-} from './types';
+} from './types.js';
 
 const { NODE_LOADER_CONFIG } = process.env;
 const configPath = pathToFileURL(
