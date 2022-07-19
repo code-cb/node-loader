@@ -2,14 +2,12 @@
  * https://nodejs.org/api/esm.html#loaders
  */
 export type HookFunction<TArgs extends [unknown, unknown], TReturn> = (
-  ...args: [...args: TArgs, defaultImpl: HookFunction<TArgs, TReturn>]
+  ...args: [...args: TArgs, nextHook: HookFunction<TArgs, TReturn>]
 ) => TReturn;
 
 export type ModuleFormat = LoadResult['format'];
 
 type ExtendedModuleFormat = ModuleFormat | Omit<string, ''>;
-
-type ImportAssertions = object;
 
 export interface ResolveContext {
   conditions: string[];
@@ -19,6 +17,7 @@ export interface ResolveContext {
 
 export interface ResolveResult {
   format?: ExtendedModuleFormat | null;
+  shortCircuit: true;
   url: string;
 }
 
@@ -32,7 +31,7 @@ export interface LoadContext {
   importAssertions: ImportAssertions;
 }
 
-export type LoadResult =
+export type LoadResult = { shortCircuit: true } & (
   | {
       format: 'builtin';
     }
@@ -48,7 +47,8 @@ export type LoadResult =
   | {
       format: 'wasm';
       source: ArrayBuffer | SharedArrayBuffer | Uint8Array;
-    };
+    }
+);
 
 export type LoadHook = HookFunction<
   [url: string, context: LoadContext],

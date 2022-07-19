@@ -16,11 +16,11 @@ const constructImpl =
   <TArg1, TArg2, TReturn>(
     hooks: HookFunction<[TArg1, TArg2], TReturn>[],
     index: number,
-    defaultImpl: HookFunction<[TArg1, TArg2], TReturn>,
+    nextHook: HookFunction<[TArg1, TArg2], TReturn>,
   ) =>
   (arg1: TArg1, arg2: TArg2) => {
-    const impl = hooks[index] || defaultImpl;
-    const nextImpl = constructImpl(hooks, index + 1, defaultImpl);
+    const impl = hooks[index] || nextHook;
+    const nextImpl = constructImpl(hooks, index + 1, nextHook);
     return impl(arg1, arg2, nextImpl);
   };
 
@@ -28,8 +28,8 @@ const flattenHooks =
   <TArg1, TArg2, TReturn>(
     hooks: HookFunction<[TArg1, TArg2], TReturn>[],
   ): HookFunction<[TArg1, TArg2], TReturn> =>
-  (arg1, arg2, defaultImpl) => {
-    const impl = constructImpl(hooks, 0, defaultImpl);
+  (arg1, arg2, nextHook) => {
+    const impl = constructImpl(hooks, 0, nextHook);
     return impl(arg1, arg2);
   };
 

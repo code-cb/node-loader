@@ -10,6 +10,7 @@ import type {
 
 export type {} from './global.js';
 export type {
+  HookFunction,
   LoadContext,
   LoadHook,
   LoadResult,
@@ -49,20 +50,16 @@ const getConfig = async () => {
   return config;
 };
 
-export const load: LoadHook = async (url, context, defaultLoad) => {
-  if (loadingConfig) return defaultLoad(url, context, defaultLoad);
+export const load: LoadHook = async (url, context, nextLoad) => {
+  if (loadingConfig) return nextLoad(url, context, nextLoad);
   const { resolvedLoaders } = await getConfig();
-  return resolvedLoaders.load(url, context, defaultLoad);
+  return resolvedLoaders.load(url, context, nextLoad);
 };
 
-export const resolve: ResolveHook = async (
-  specifier,
-  context,
-  defaultResolve,
-) => {
-  if (loadingConfig) return defaultResolve(specifier, context, defaultResolve);
+export const resolve: ResolveHook = async (specifier, context, nextResolve) => {
+  if (loadingConfig) return nextResolve(specifier, context, nextResolve);
   const { resolvedLoaders } = await getConfig();
-  return resolvedLoaders.resolve(specifier, context, defaultResolve);
+  return resolvedLoaders.resolve(specifier, context, nextResolve);
 };
 
 global.nodeLoader ||= {} as NodeLoader;
