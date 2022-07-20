@@ -1,8 +1,12 @@
 /**
  * https://nodejs.org/api/esm.html#loaders
  */
+export type NextHook<TArgs extends [unknown, unknown], TReturn> = (
+  ...args: TArgs
+) => TReturn;
+
 export type HookFunction<TArgs extends [unknown, unknown], TReturn> = (
-  ...args: [...args: TArgs, nextHook: HookFunction<TArgs, TReturn>]
+  ...args: [...args: TArgs, nextHook: NextHook<TArgs, TReturn>]
 ) => TReturn;
 
 export type ModuleFormat = LoadResult['format'];

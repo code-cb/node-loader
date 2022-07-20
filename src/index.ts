@@ -51,13 +51,13 @@ const getConfig = async () => {
 };
 
 export const load: LoadHook = async (url, context, nextLoad) => {
-  if (loadingConfig) return nextLoad(url, context, nextLoad);
+  if (loadingConfig) return nextLoad(url, context);
   const { resolvedLoaders } = await getConfig();
   return resolvedLoaders.load(url, context, nextLoad);
 };
 
 export const resolve: ResolveHook = async (specifier, context, nextResolve) => {
-  if (loadingConfig) return nextResolve(specifier, context, nextResolve);
+  if (loadingConfig) return nextResolve(specifier, context);
   const { resolvedLoaders } = await getConfig();
   return resolvedLoaders.resolve(specifier, context, nextResolve);
 };
