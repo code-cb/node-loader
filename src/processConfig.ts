@@ -6,19 +6,25 @@ import type {
   NodeLoaderConfig,
   NextHook,
 } from './types.js';
-import { die, configErrorMessage } from './utils.js';
 
-const getHooks = <THookName extends keyof HookMap>(
+const die = (msg: string, err?: Error): never => {
+  const fullMsg = `node-loader.config.js: ${msg}`;
+  console.error(fullMsg);
+  err && console.error(err);
+  process.exit(1);
+};
+
+const getHooks = <HookName extends keyof HookMap>(
   loaders: HookMap[],
-  name: THookName,
+  name: HookName,
 ) => loaders.flatMap(loader => loader[name] ?? []);
 
 const constructImpl =
-  <TArg1, TArg2, TReturn>(
-    hooks: HookFunction<[TArg1, TArg2], TReturn>[],
+  <Arg1, Arg2, Result>(
+    hooks: HookFunction<[Arg1, Arg2], Result>[],
     index: number,
-    defaultHook: HookFunction<[TArg1, TArg2], TReturn>,
-  ): NextHook<[TArg1, TArg2], TReturn> =>
+    defaultHook: HookFunction<[Arg1, Arg2], Result>,
+  ): NextHook<[Arg1, Arg2], Result> =>
   (arg1, arg2) => {
     const impl = hooks[index] || defaultHook;
     const nextHook = constructImpl(hooks, index + 1, defaultHook);
@@ -26,9 +32,9 @@ const constructImpl =
   };
 
 const flattenHooks =
-  <TArg1, TArg2, TReturn>(
-    hooks: HookFunction<[TArg1, TArg2], TReturn>[],
-  ): HookFunction<[TArg1, TArg2], TReturn> =>
+  <Arg1, Arg2, Result>(
+    hooks: HookFunction<[Arg1, Arg2], Result>[],
+  ): HookFunction<[Arg1, Arg2], Result> =>
   (arg1, arg2, defaultHook) => {
     const impl = constructImpl(hooks, 0, defaultHook);
     return impl(arg1, arg2);
@@ -43,9 +49,7 @@ export const processConfig = (
   config: NodeLoaderConfigInput | undefined,
 ): NodeLoaderConfig => {
   if (!config || typeof config !== 'object')
-    return die(
-      configErrorMessage('did not export a config object as default export.'),
-    );
+    return die('did not export a config object as default export.');
 
   if (!Array.isArray(config.loaders))
     return die('exported object does not include a "loaders" array.');

@@ -1,13 +1,15 @@
+type Awaitable<T> = T | Promise<T>;
+
 /**
  * https://nodejs.org/api/esm.html#loaders
  */
-export type NextHook<TArgs extends [unknown, unknown], TReturn> = (
-  ...args: TArgs
-) => TReturn;
+export type NextHook<Args extends [unknown, unknown], Result> = (
+  ...args: Args
+) => Result;
 
-export type HookFunction<TArgs extends [unknown, unknown], TReturn> = (
-  ...args: [...args: TArgs, nextHook: NextHook<TArgs, TReturn>]
-) => TReturn;
+export type HookFunction<Args extends [unknown, unknown], Result> = (
+  ...args: [...args: Args, nextHook: NextHook<Args, Result>]
+) => Result;
 
 export type ModuleFormat = LoadResult['format'];
 
@@ -27,7 +29,7 @@ export interface ResolveResult {
 
 export type ResolveHook = HookFunction<
   [specifier: string, context: ResolveContext],
-  ResolveResult | Promise<ResolveResult>
+  Awaitable<ResolveResult>
 >;
 
 export interface LoadContext {
@@ -56,7 +58,7 @@ export type LoadResult = { shortCircuit: true } & (
 
 export type LoadHook = HookFunction<
   [url: string, context: LoadContext],
-  LoadResult | Promise<LoadResult>
+  Awaitable<LoadResult>
 >;
 
 export type HookMap = {

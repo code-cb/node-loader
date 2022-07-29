@@ -15,6 +15,7 @@ export type {
   LoadHook,
   LoadResult,
   ModuleFormat,
+  NextHook,
   NodeLoader,
   NodeLoaderConfig,
   NodeLoaderConfigInput,
@@ -24,11 +25,12 @@ export type {
 } from './types.js';
 
 const { NODE_LOADER_CONFIG } = process.env;
-const configPath = pathToFileURL(
+const configFileUrl = pathToFileURL(
   NODE_LOADER_CONFIG && isAbsolute(NODE_LOADER_CONFIG)
     ? NODE_LOADER_CONFIG
     : pathResolve(process.cwd(), NODE_LOADER_CONFIG || 'node-loader.config.js'),
-);
+).href;
+
 let config: NodeLoaderConfig;
 let loadingConfig = false;
 
@@ -36,11 +38,11 @@ const getConfig = async () => {
   if (!config) {
     try {
       loadingConfig = true;
-      const mod = await import(configPath.href);
+      const mod = await import(configFileUrl);
       config = processConfig(mod.default);
     } catch (err) {
       console.warn(
-        `Could not read node-loader.config.js file at ${configPath}, continuing without node loader config`,
+        `Could not read node-loader.config.js file at ${configFileUrl}, continuing without node loader config`,
       );
       console.error(err);
       config = processConfig({ loaders: [] });
